@@ -117,7 +117,8 @@ class TXT2Section:
 
         while True:
             # text command parsing
-            if data[offset] == 0x0E or data[offset] == 0xf: #0x0E and 0fx are tag headers
+            char_val = struct.unpack_from('<H', data, offset)[0]
+            if char_val == 0x000E or char_val == 0x000F: #0x000E and 0x000F are tag headers
                 text_command = TextCommand(data, offset)
                 if len(text) > 0:
                     # if there's already data in text variable, create component before adding text command
@@ -127,12 +128,11 @@ class TXT2Section:
                 offset = text_command.end_offset
                 continue
 
-            char = struct.unpack_from("<H", data, offset)[0]
-            if char == 0x0000:
+            if char_val == 0x0000:
                 # end text parsing
                 break
 
-            text += chr(char)
+            text += chr(char_val)
             offset += 2
         
         #after parsing finished, create component and add to component list
