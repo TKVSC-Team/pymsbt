@@ -1,5 +1,6 @@
 import struct
 
+
 def formatList(texts):
     string = """"""
     for text in texts:
@@ -21,7 +22,7 @@ class MSBTHeader:
         # magic must be MsgStdBn
         if self.magic != "MsgStdBn":
             raise ValueError(f"Invalid MSBT file magic: {self.magic}")
-        
+
         print(f"MSBT Header: Magic={self.magic}, Byte order={self.byte_order} Version={self.version}, SectionCount={self.section_count}, FileSize={self.file_size}")
 
     def __str__(self):
@@ -39,7 +40,7 @@ class MSBTSection:
 
     def __str__(self):
         return f"(signature: {self.signature}  table_size: {self.table_size})"
-    def __repr__(self): # this needs to be here for print to work if in a list 
+    def __repr__(self): # this needs to be here for print to work if in a list
         return self.__str__()
 
 class LBL1Section:
@@ -64,7 +65,7 @@ class LBL1Section:
 
             self.offset_table.append((str_count, str_offset))
             #print(f"Label {i}: StringCount={str_count}, StringOffset={str_offset}")
-            
+
             # parse actual strings
             self.parse_label_strings(data, section_offset + 16 + str_offset, str_count)
 
@@ -75,7 +76,7 @@ class LBL1Section:
             # get length of the string
             str_len = data[offset]
             offset += 1
-            
+
             # read the label string
             label = data[offset:offset + str_len].decode('ascii')
             offset += str_len
@@ -101,14 +102,14 @@ class TXT2Section:
         offset = section_offset + 16
         self.offset_count, = struct.unpack_from("<I", data, offset)
         offset += 4  # Move past the text count
-        
+
         # read each string in the text section
         for i in range(self.offset_count):
             text_offset, = struct.unpack_from("<I", data, offset)
             self.offset_table.append(text_offset)
             offset += 4
             self.parse_text_string(data, section_offset + 16 + text_offset)
-    
+
     def parse_text_string(self, data, text_offset):
         # text and text commands are represented as components with 'type' and 'data'
         components = []
@@ -134,7 +135,7 @@ class TXT2Section:
 
             text += chr(char_val)
             offset += 2
-        
+
         #after parsing finished, create component and add to component list
         if len(text) > 0:
             components.append(TextComponent(type='text', data=text))
@@ -152,7 +153,7 @@ class MSBTLabel:
 
     def __str__(self):
         return (f"(length: {self.length}, data: {self.data}, string_index: {self.string_index})")
-    def __repr__(self): # this needs to be here for print to work if in a list 
+    def __repr__(self): # this needs to be here for print to work if in a list
         return self.__str__()
 
 class TextComponent:
@@ -169,7 +170,7 @@ class TextCommand:
     def __init__(self, msbt_data, start_offset):
         self.start_offset = start_offset
         offset = start_offset
-        
+
         unpacked = struct.unpack_from('<HHHH', msbt_data, offset)
 
         self.magic = hex(unpacked[0]) #0xe of 0xf for data-less tags
@@ -191,5 +192,5 @@ class TextCommand:
     def __str__(self):
         return (f"(type: {self.group}:{self.type}, data: {self.data})")
 
-    def __repr__(self): # this needs to be here for print to work if in a list 
+    def __repr__(self): # this needs to be here for print to work if in a list
         return self.__str__()

@@ -1,4 +1,3 @@
-import struct
 from .classes import *
 
 LITTLE_ENDIAN = 0xFFFE
@@ -31,7 +30,7 @@ class MSBTFile:
         self.LBL1 = None
         self.TXT2 = None
         self.ATR1 = None
-        
+
         self.text_labels = {}
 
         #self.attributes = []
@@ -72,18 +71,18 @@ class MSBTFile:
                 section.storeBytes(self.data, offset, next_offset)
 
             self.sections.append(section)
-            
+
             # move to next section (aligned to 16 bytes)
             offset = next_offset
-    
+
     #def parse_attributes_section(self, section_offset, table_size):
     #    offset = section_offset + 16 # skip ATR1 section header
     #
     #    attr_header_data = struct.unpack_from("<II", self.data, offset)
     #    attr_count, attr_data_size = attr_header_data
-    # 
+    #
     #    offset += 8
-    #    
+    #
     #    for i in range(attr_count):
     #        # read each attribute entry (4b offset from beginning)
     #        attr_offset, = struct.unpack_from("<I", self.data, offset)
@@ -98,9 +97,9 @@ class MSBTFile:
             if label.data == lbl:
                 label_obj = label
                 break
-        
+
         return label_obj.string_index
-    
+
     def set_text(self, label, text):
         """Sets a text value in TXT2.texts that corresponds to the label."""
         index = self.get_text_index(label)

@@ -1,5 +1,6 @@
 import struct
 
+
 class MSBTWriter:
     def __init__(self, msbt_file, filepath=None):
         """
@@ -144,20 +145,20 @@ class MSBTWriter:
             # Get the length of the string
             str_len = len(label.data)
             self._pack_into_stream("<B", offset, str_len)
-            offset += 1 
-            
+            offset += 1
+
             # write the null-terminated string
             self._pack_into_stream(f'<{str_len}s', offset, label.data.encode('ascii'))
             offset += str_len
 
             index = label.string_index
             #index = int.from_bytes(index, byteorder='little')
-            self._pack_into_stream(f'<I', offset, index) #write index
+            self._pack_into_stream('<I', offset, index) #write index
             offset += 4 # move past index
 
             self.label_index += 1
         return offset - 3
-    
+
 
     ## TEXT
     def _write_text_section(self, section_offset):
@@ -216,7 +217,7 @@ class MSBTWriter:
     def _write_text_command(self, start_offset, command):
         """Writes a text command to the file"""
         offset = start_offset
-        
+
         self._pack_into_stream(
             '<HHHH',
             offset,
@@ -232,7 +233,7 @@ class MSBTWriter:
         offset += command.data_size
         return offset
 
-    
+
     ## ATTRIBUTES
     #def write_attributes_section(self, section_offset, table_size):
     #    offset = section_offset + 16  # skip section header
@@ -240,7 +241,7 @@ class MSBTWriter:
     #    attr_count, attr_data_size = self.msbt.attr_header_data
     #    self._pack_into_stream("<II", offset, attr_count, attr_data_size)
     #    offset += 8
-        
+
         #for i in range(attr_count):
         #    # Read each attribute entry (4-byte offset from beginning)
         #    attr_offset, = struct.unpack_from("<I", self.data, offset)
